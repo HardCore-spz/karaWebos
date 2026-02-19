@@ -1,5 +1,5 @@
 {
-  "versionCode": 2,
-  "versionName": "1.1",
-  "changelog": "- Thêm mic nhận dạng giọng nói\n- Tự tìm server trên mạng\n- Tự cập nhật app"
+  "versionCode": 3,
+  "versionName": "1.2",
+  "changelog": "- Cài đặt: Kiểm tra cập nhật thủ công\n- Giao diện hướng dẫn chuyên nghiệp hơn\n- Tự phát hiện server nhanh hơn"
 }

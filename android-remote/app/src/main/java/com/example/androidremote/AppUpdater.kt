@@ -29,57 +29,25 @@ object AppUpdater {
     private const val GITHUB_VERSION_URL = "https://raw.githubusercontent.com/HardCore-spz/karaWebos/main/karaoke-ws-server/update/version.json"
     private const val GITHUB_APK_URL = "https://raw.githubusercontent.com/HardCore-spz/karaWebos/main/karaoke-ws-server/update/app.apk"
 
-    /** Check for update from GitHub. Runs on background thread. */
+    /** Check for update. Priority: Local (faster for testing), then GitHub. */
     fun checkForUpdate(context: Context, silent: Boolean = true) {
         Thread {
-            try {
-                // Ưu tiên check từ GitHub để dùng được khi tắt laptop
-                val url = URL(GITHUB_VERSION_URL)
-                val conn = url.openConnection() as HttpURLConnection
-                conn.connectTimeout = 5000
-                conn.readTimeout = 5000
-                
-                if (conn.responseCode != 200) {
-                    // Nếu lỗi GitHub (như chưa push), thử check local server nếu đang kết nối
-                    checkLocalUpdate(context, silent)
-                    return@Thread
-                }
-
-                val json = conn.inputStream.bufferedReader().readText()
-                conn.disconnect()
-
-                val obj = JSONObject(json)
-                val remote = VersionInfo(
-                    versionCode = obj.getInt("versionCode"),
-                    versionName = obj.getString("versionName"),
-                    changelog = obj.optString("changelog", "")
-                )
-
-                val currentVersionCode = getCurrentVersionCode(context)
-
-                if (remote.versionCode > currentVersionCode) {
-                    handler.post {
-                        showUpdateDialog(context, remote, GITHUB_APK_URL)
-                    }
-                } else if (!silent) {
-                    handler.post {
-                        Toast.makeText(context, "Đã là phiên bản mới nhất", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                // Fallback to local
-                checkLocalUpdate(context, silent)
+            // Thử check local trước (nhanh hơn khi đang dev)
+            val serverIP = WebSocketManager.getServerIP()
+            if (serverIP != null) {
+                if (checkLocalUpdateSync(context, silent, serverIP)) return@Thread
             }
+
+            // Nếu local không có hoặc server offline, check GitHub
+            checkGitHubUpdate(context, silent)
         }.start()
     }
 
-    private fun checkLocalUpdate(context: Context, silent: Boolean) {
-        val serverIP = WebSocketManager.getServerIP() ?: return
-        
+    private fun checkLocalUpdateSync(context: Context, silent: Boolean, serverIP: String): Boolean {
         try {
             val url = URL("http://$serverIP:3000/version")
             val conn = url.openConnection() as HttpURLConnection
-            conn.connectTimeout = 3000
+            conn.connectTimeout = 1500
             if (conn.responseCode == 200) {
                 val json = conn.inputStream.bufferedReader().readText()
                 val obj = JSONObject(json)
@@ -90,15 +58,41 @@ object AppUpdater {
                 )
                 if (remote.versionCode > getCurrentVersionCode(context)) {
                     handler.post { showUpdateDialog(context, remote, "http://$serverIP:3000/apk") }
-                    return
+                    return true
+                } else if (!silent) {
+                    handler.post { Toast.makeText(context, "Bản local đã mới nhất (v${remote.versionName})", Toast.LENGTH_SHORT).show() }
+                    return true // Ngừng lại vì đã tìm thấy bản local mới nhất
                 }
             }
         } catch (_: Exception) {}
+        return false
+    }
 
-        if (!silent) {
-            handler.post {
-                Toast.makeText(context, "Không kiểm tra được cập nhật", Toast.LENGTH_SHORT).show()
+    private fun checkGitHubUpdate(context: Context, silent: Boolean) {
+        try {
+            val url = URL(GITHUB_VERSION_URL)
+            val conn = url.openConnection() as HttpURLConnection
+            conn.connectTimeout = 3000
+            if (conn.responseCode != 200) {
+                if (!silent) handler.post { Toast.makeText(context, "Không thể check GitHub", Toast.LENGTH_SHORT).show() }
+                return
             }
+
+            val json = conn.inputStream.bufferedReader().readText()
+            val obj = JSONObject(json)
+            val remote = VersionInfo(
+                versionCode = obj.getInt("versionCode"),
+                versionName = obj.getString("versionName"),
+                changelog = obj.optString("changelog", "")
+            )
+
+            if (remote.versionCode > getCurrentVersionCode(context)) {
+                handler.post { showUpdateDialog(context, remote, GITHUB_APK_URL) }
+            } else if (!silent) {
+                handler.post { Toast.makeText(context, "Đã là phiên bản mới nhất trên GitHub", Toast.LENGTH_SHORT).show() }
+            }
+        } catch (_: Exception) {
+            if (!silent) handler.post { Toast.makeText(context, "Không thể check update", Toast.LENGTH_SHORT).show() }
         }
     }
 

@@ -60,6 +60,9 @@ class MainActivity : AppCompatActivity(), WebSocketManager.Listener {
         stopButton.setOnClickListener {
             WebSocketManager.sendStop()
         }
+
+        // Cũng check update ở main screen cho chắc
+        AppUpdater.checkForUpdate(this, silent = true)
     }
 
     override fun onStart() {
