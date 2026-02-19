@@ -26,18 +26,24 @@ object AppUpdater {
         val changelog: String
     )
 
-    /** Check for update from the karaoke server. Runs on background thread. */
-    fun checkForUpdate(context: Context, silent: Boolean = true) {
-        val serverIP = WebSocketManager.getServerIP() ?: return
+    private const val GITHUB_VERSION_URL = "https://raw.githubusercontent.com/HardCore-spz/karaWebos/main/karaoke-ws-server/update/version.json"
+    private const val GITHUB_APK_URL = "https://raw.githubusercontent.com/HardCore-spz/karaWebos/main/karaoke-ws-server/update/app.apk"
 
+    /** Check for update from GitHub. Runs on background thread. */
+    fun checkForUpdate(context: Context, silent: Boolean = true) {
         Thread {
             try {
-                val url = URL("http://$serverIP:3000/version")
+                // Ưu tiên check từ GitHub để dùng được khi tắt laptop
+                val url = URL(GITHUB_VERSION_URL)
                 val conn = url.openConnection() as HttpURLConnection
-                conn.connectTimeout = 3000
-                conn.readTimeout = 3000
-
-                if (conn.responseCode != 200) return@Thread
+                conn.connectTimeout = 5000
+                conn.readTimeout = 5000
+                
+                if (conn.responseCode != 200) {
+                    // Nếu lỗi GitHub (như chưa push), thử check local server nếu đang kết nối
+                    checkLocalUpdate(context, silent)
+                    return@Thread
+                }
 
                 val json = conn.inputStream.bufferedReader().readText()
                 conn.disconnect()
@@ -53,21 +59,47 @@ object AppUpdater {
 
                 if (remote.versionCode > currentVersionCode) {
                     handler.post {
-                        showUpdateDialog(context, remote, serverIP)
+                        showUpdateDialog(context, remote, GITHUB_APK_URL)
                     }
                 } else if (!silent) {
                     handler.post {
                         Toast.makeText(context, "Đã là phiên bản mới nhất", Toast.LENGTH_SHORT).show()
                     }
                 }
-            } catch (_: Exception) {
-                if (!silent) {
-                    handler.post {
-                        Toast.makeText(context, "Không kiểm tra được cập nhật", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            } catch (e: Exception) {
+                // Fallback to local
+                checkLocalUpdate(context, silent)
             }
         }.start()
+    }
+
+    private fun checkLocalUpdate(context: Context, silent: Boolean) {
+        val serverIP = WebSocketManager.getServerIP() ?: return
+        
+        try {
+            val url = URL("http://$serverIP:3000/version")
+            val conn = url.openConnection() as HttpURLConnection
+            conn.connectTimeout = 3000
+            if (conn.responseCode == 200) {
+                val json = conn.inputStream.bufferedReader().readText()
+                val obj = JSONObject(json)
+                val remote = VersionInfo(
+                    versionCode = obj.getInt("versionCode"),
+                    versionName = obj.getString("versionName"),
+                    changelog = obj.optString("changelog", "")
+                )
+                if (remote.versionCode > getCurrentVersionCode(context)) {
+                    handler.post { showUpdateDialog(context, remote, "http://$serverIP:3000/apk") }
+                    return
+                }
+            }
+        } catch (_: Exception) {}
+
+        if (!silent) {
+            handler.post {
+                Toast.makeText(context, "Không kiểm tra được cập nhật", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun getCurrentVersionCode(context: Context): Int {
@@ -80,18 +112,18 @@ object AppUpdater {
         }
     }
 
-    private fun showUpdateDialog(context: Context, version: VersionInfo, serverIP: String) {
+    private fun showUpdateDialog(context: Context, version: VersionInfo, downloadUrl: String) {
         AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Dialog_Alert)
             .setTitle("Cập nhật v${version.versionName}")
             .setMessage("Có phiên bản mới!\n\n${version.changelog}")
             .setPositiveButton("Cập nhật") { _, _ ->
-                downloadAndInstall(context, serverIP)
+                downloadAndInstall(context, downloadUrl)
             }
             .setNegativeButton("Để sau", null)
             .show()
     }
 
-    private fun downloadAndInstall(context: Context, serverIP: String) {
+    private fun downloadAndInstall(context: Context, downloadUrl: String) {
         // Show progress dialog
         val progressBar = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal).apply {
             max = 100
@@ -118,7 +150,7 @@ object AppUpdater {
 
         Thread {
             try {
-                val url = URL("http://$serverIP:3000/apk")
+                val url = URL(downloadUrl)
                 val conn = url.openConnection() as HttpURLConnection
                 conn.connectTimeout = 10000
                 conn.readTimeout = 30000
