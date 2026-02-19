@@ -1,0 +1,16 @@
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary_red">#CC0000</color>
+    <color name="primary_red_dark">#990000</color>
+    <color name="dark_bg">#1A1A2E</color>
+    <color name="dark_surface">#16213E</color>
+    <color name="dark_card">#0F3460</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#9E9E9E</color>
+    <color name="search_bg">#2A2A40</color>
+    <color name="divider">#333355</color>
+    <color name="youtube_tag">#FF0000</color>
+    <color name="playing_bg">#2A1A1A</color>
+    <color name="tab_indicator">#CC0000</color>
+</resources>

@@ -1,0 +1,22 @@
+# Android
+android-remote/.gradle/
+android-remote/build/
+android-remote/app/build/
+android-remote/local.properties
+android-remote/.idea/
+android-remote/*.iml
+android-remote/app/*.iml
+
+# Node
+karaoke-ws-server/node_modules/
+karaoke-ws-server/update/app.apk
+
+# webOS build output
+*.ipk
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gradle wrapper jar (large)
+android-remote/gradle/wrapper/gradle-wrapper.jar

@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Karaoke Remote</string>
+    <string name="search_hint">TÌM BÀI HÁT / CA SĨ</string>
+    <string name="tab_all">TẤT CẢ (%d)</string>
+    <string name="tab_selected">ĐÃ CHỌN (%d)</string>
+    <string name="no_song">Chưa có bài hát</string>
+    <string name="added_to_queue">Đã thêm vào danh sách chờ</string>
+    <string name="added_priority">Đã thêm ưu tiên phát tiếp theo</string>
+    <string name="already_in_queue">Bài này đã có trong danh sách</string>
+    <string name="enter_tv_code">Nhập mã TV</string>
+    <string name="connecting">Đang kết nối…</string>
+    <string name="pair_hint">Ví dụ: 123456</string>
+    <string name="connect">Kết nối</string>
+    <string name="not_connected">Chưa kết nối</string>
+    <string name="priority">Ưu tiên</string>
+    <string name="select_song">Chọn</string>
+    <string name="choose_action">Thêm bài hát</string>
+    <string name="priority_desc">Phát ngay sau bài hiện tại</string>
+    <string name="select_desc">Thêm vào cuối danh sách chờ</string>
+    <string name="settings_pair_title">Cài đặt ghép nối</string>
+    <string name="current_room">Mã phòng hiện tại</string>
+    <string name="change_room">Đổi mã phòng</string>
+    <string name="save">Lưu</string>
+    <string name="cancel">Hủy</string>
+</resources>

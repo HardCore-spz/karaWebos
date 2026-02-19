@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="@color/dark_bg">
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_youtube"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="KARAOKE REMOTE"
+        android:textColor="@color/primary_red"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_tv_code"
+        android:textColor="@color/text_secondary"
+        android:textSize="16sp"
+        android:layout_marginBottom="28dp" />
+
+    <EditText
+        android:id="@+id/roomEditText"
+        android:layout_width="220dp"
+        android:layout_height="52dp"
+        android:hint="@string/pair_hint"
+        android:inputType="number"
+        android:maxLength="6"
+        android:textSize="22sp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:gravity="center"
+        android:letterSpacing="0.3"
+        android:background="@drawable/bg_search_bar"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/connectButton"
+        android:layout_width="220dp"
+        android:layout_height="48dp"
+        android:text="@string/connect"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:backgroundTint="@color/primary_red"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/not_connected"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
+
+</LinearLayout>

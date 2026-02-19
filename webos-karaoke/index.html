@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webOS Karaoke Player</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="waiting-screen" class="screen active">
+      <div class="card">
+        <h1>Karaoke Player</h1>
+        <p class="muted">Mã pairing</p>
+        <div id="pairing-code" class="pairing-code">000000</div>
+        <p id="connection-status" class="status">Đang kết nối server...</p>
+        <p class="hint">Mở app điều khiển và nhập mã để phát bài.</p>
+      </div>
+    </div>
+
+    <div id="player-screen" class="screen">
+      <div id="player-container" style="width:100%; height:100%; background:#000;"></div>
+    </div>
+
+    <!-- No more hidden debug elements -->
+
+    <script src="js/player.js"></script>
+    <script src="js/socket.js"></script>
+  </body>
+</html>

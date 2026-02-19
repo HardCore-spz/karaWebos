@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/dark_bg">
+
+    <!-- Search Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="6dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_search_bar"
+        android:paddingStart="14dp"
+        android:paddingEnd="10dp">
+
+        <EditText
+            android:id="@+id/searchEditText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:background="@null"
+            android:hint="@string/search_hint"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
+
+        <ImageButton
+            android:id="@+id/btnMic"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_mic"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/white"
+            android:scaleType="fitCenter"
+            android:padding="6dp"
+            android:layout_marginStart="4dp"
+            android:contentDescription="Voice search" />
+
+        <ImageButton
+            android:id="@+id/btnSearch"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_search"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/white"
+            android:scaleType="fitCenter"
+            android:padding="6dp"
+            android:layout_marginStart="4dp"
+            android:contentDescription="Search" />
+
+        <ImageButton
+            android:id="@+id/btnSettings"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_settings"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/text_secondary"
+            android:scaleType="fitCenter"
+            android:padding="4dp"
+            android:layout_marginStart="4dp"
+            android:contentDescription="Settings" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_youtube"
+            android:layout_marginStart="4dp" />
+
+    </LinearLayout>
+
+    <!-- Tab Layout -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@color/dark_bg"
+        app:tabTextColor="@color/text_secondary"
+        app:tabSelectedTextColor="@color/white"
+        app:tabIndicatorColor="@color/tab_indicator"
+        app:tabIndicatorHeight="3dp"
+        app:tabIndicatorFullWidth="true"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabTextAppearance="@style/TabTextStyle">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TẤT CẢ (0)" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ĐÃ CHỌN (0)" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- Results / Queue RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
+
+    <!-- Bottom Control Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/primary_red"
+        android:elevation="8dp">
+
+        <!-- Now Playing Text -->
+        <TextView
+            android:id="@+id/nowPlayingText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_song"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="2dp"
+            android:alpha="0.9" />
+
+        <!-- Control Buttons: 5 nút riêng biệt -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingBottom="6dp"
+            android:paddingTop="2dp">
+
+            <ImageButton
+                android:id="@+id/btnPause"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_pause"
+                app:tint="@color/white"
+                android:scaleType="fitCenter"
+                android:padding="12dp"
+                android:contentDescription="Dừng" />
+
+            <ImageButton
+                android:id="@+id/btnPlay"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_play"
+                app:tint="@color/white"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
+                android:contentDescription="Hát tiếp" />
+
+            <ImageButton
+                android:id="@+id/btnSkip"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_skip_next"
+                app:tint="@color/white"
+                android:scaleType="fitCenter"
+                android:padding="12dp"
+                android:contentDescription="Qua bài" />
+
+            <ImageButton
+                android:id="@+id/btnVolUp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_volume_up"
+                app:tint="@color/white"
+                android:scaleType="fitCenter"
+                android:padding="12dp"
+                android:contentDescription="Tăng âm lượng" />
+
+            <ImageButton
+                android:id="@+id/btnVolDown"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_volume_down"
+                app:tint="@color/white"
+                android:scaleType="fitCenter"
+                android:padding="12dp"
+                android:contentDescription="Giảm âm lượng" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

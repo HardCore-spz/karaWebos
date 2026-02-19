@@ -1,0 +1,12 @@
+{
+  "id": "com.example.weboskaraoke",
+  "version": "1.0.0",
+  "vendor": "YourCompany",
+  "type": "web",
+  "main": "index.html",
+  "title": "Karaoke Player",
+  "icon": "",
+  "requiredMemory": 64,
+  "largeIcon": "",
+  "supportsAudioGuidance": false
+}
