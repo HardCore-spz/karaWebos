@@ -1,4 +1,4 @@
-package com.pnd.karaoke
+package com.example.androidremote
 
 import android.Manifest
 import android.app.AlertDialog
