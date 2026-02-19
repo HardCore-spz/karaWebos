@@ -1,5 +1,5 @@
-{
-  "versionCode": 6,
-  "versionName": "1.5",
-  "changelog": "- Cập nhật icon qua bài kiểu mới (double angles)\n- Sửa lỗi hiển thị ảnh hướng dẫn ở màn hình Pairing\n- Cập nhật chính xác phiên bản v1.5 để check update"
+﻿{
+  "versionCode": 8,
+  "versionName": "1.7",
+  "changelog": "- Cập nhật v1.7: Đồng bộ phiên bản toàn hệ thống\n- Sửa lỗi hiển thị thông tin phiên bản cũ\n- Tăng cường khả năng nhận diện giọng nói"
 }

@@ -94,8 +94,8 @@ class PairActivity : AppCompatActivity(), WebSocketManager.Listener {
                     1 -> {
                         val vName = try {
                             packageManager.getPackageInfo(packageName, 0).versionName
-                        } catch (_: Exception) { "v1.0" }
-                        Toast.makeText(this, "Phiên bản: $vName\nKaraoke Remote v1.1", Toast.LENGTH_LONG).show()
+                        } catch (_: Exception) { "v1.6" }
+                        Toast.makeText(this, "Phiên bản: $vName\nKaraoke Remote v1.6 (PND)", Toast.LENGTH_LONG).show()
                     }
                 }
             }
