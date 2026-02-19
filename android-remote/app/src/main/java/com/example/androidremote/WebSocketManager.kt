@@ -1,4 +1,4 @@
-package com.example.androidremote
+package com.pnd.karaoke
 
 import android.content.Context
 import android.os.Handler
