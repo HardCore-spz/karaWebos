@@ -71,6 +71,9 @@ class KaraokeActivity : AppCompatActivity(), WebSocketManager.Listener {
         showSongActionDialog(item)
     }
 
+    private var speechRecognizer: SpeechRecognizer? = null
+    private var isListening = false
+
     private val queueAdapter = QueueAdapter(
         onRemove = { position -> removeFromQueue(position) },
         onClick = { position -> playFromQueue(position) }
@@ -132,7 +135,11 @@ class KaraokeActivity : AppCompatActivity(), WebSocketManager.Listener {
         }
 
         btnMic.setOnClickListener {
-            startVoiceRecognition()
+            if (isListening) {
+                stopListening()
+            } else {
+                startVoiceRecognition()
+            }
         }
     }
 
@@ -145,34 +152,102 @@ class KaraokeActivity : AppCompatActivity(), WebSocketManager.Listener {
             )
             return
         }
-        launchSpeechRecognizer()
-    }
 
-    private fun launchSpeechRecognizer() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "Nói tên bài hát...")
-        }
-
-        // Kiểm tra xem hệ thống có bất kỳ công cụ nhận dạng giọng nói nào không
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             showNoVoiceDialog()
             return
         }
 
-        try {
-            speechLauncher.launch(intent)
-        } catch (e: Exception) {
-            // Nếu vẫn lỗi intent, thử hướng dẫn cài app Google
-            showNoVoiceDialog()
+        initializeSpeechRecognizer()
+        startListeningIntent()
+    }
+
+    private fun initializeSpeechRecognizer() {
+        if (speechRecognizer == null) {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
+            speechRecognizer?.setRecognitionListener(object : RecognitionListener {
+                override fun onReadyForSpeech(params: Bundle?) {
+                    isListening = true
+                    btnMic.animate().scaleX(1.3f).scaleY(1.3f).setDuration(300).start()
+                    // Thay đổi màu hoặc icon nếu cần, ở đây ta Scale cho lẹ
+                    Toast.makeText(this@KaraokeActivity, "Đang nghe... hãy nói đi!", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onBeginningOfSpeech() {}
+                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onBufferReceived(buffer: ByteArray?) {}
+                override fun onEndOfSpeech() {
+                    resetMicIcon()
+                }
+
+                override fun onError(error: Int) {
+                    resetMicIcon()
+                    val message = when (error) {
+                        SpeechRecognizer.ERROR_AUDIO -> "Lỗi âm thanh"
+                        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Ứng dụng thiếu quyền Micro"
+                        SpeechRecognizer.ERROR_NETWORK -> "Lỗi kết nối mạng"
+                        SpeechRecognizer.ERROR_NO_MATCH -> "Không nghe thấy gì"
+                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Đang bận, hãy thử lại sau"
+                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Hết thời gian chờ"
+                        else -> "Lỗi míc ($error)"
+                    }
+                    if (error != SpeechRecognizer.ERROR_NO_MATCH && error != SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
+                        Toast.makeText(this@KaraokeActivity, message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onResults(results: Bundle?) {
+                    resetMicIcon()
+                    val spoken = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+                    if (!spoken.isNullOrBlank()) {
+                        searchEditText.setText(spoken)
+                        searchEditText.setSelection(spoken.length)
+                        performSearch(spoken)
+                    }
+                }
+
+                override fun onPartialResults(partialResults: Bundle?) {
+                    val partial = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+                    if (!partial.isNullOrBlank()) {
+                        searchEditText.setText(partial)
+                        searchEditText.setSelection(partial.length)
+                    }
+                }
+
+                override fun onEvent(eventType: Int, params: Bundle?) {}
+            })
         }
+    }
+
+    private fun startListeningIntent() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")
+            putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+        }
+        speechRecognizer?.startListening(intent)
+        isListening = true
+    }
+
+    private fun stopListening() {
+        speechRecognizer?.stopListening()
+        resetMicIcon()
+    }
+
+    private fun resetMicIcon() {
+        isListening = false
+        btnMic.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        speechRecognizer?.destroy()
     }
 
     private fun showNoVoiceDialog() {
         AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
             .setTitle("Thiếu dịch vụ giọng nói")
-            .setMessage("Thiết bị của bạn chưa cài đặt hoặc đã tắt ứng dụng 'Google' (không phải Chrome). \n\nBạn cần cài ứng dụng Google từ Play Store để sử dụng tính năng tìm kiếm bằng giọng nói.")
+            .setMessage("Thiết bị của bạn chưa cài đặt hoặc đã tắt ứng dụng 'Google' (không phải Chrome). \n\nBạn cần cài ứng dụng Google (biểu tượng chữ G) từ Play Store để sử dụng tính năng này.")
             .setPositiveButton("Đã hiểu", null)
             .show()
     }
@@ -184,8 +259,8 @@ class KaraokeActivity : AppCompatActivity(), WebSocketManager.Listener {
         if (requestCode == REQUEST_RECORD_AUDIO && grantResults.isNotEmpty()
             && grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
-            launchSpeechRecognizer()
-        } else {
+            startVoiceRecognition()
+        } else if (requestCode == REQUEST_RECORD_AUDIO) {
             Toast.makeText(this, "Cần cấp quyền micro để tìm bằng giọng nói", Toast.LENGTH_SHORT).show()
         }
     }
