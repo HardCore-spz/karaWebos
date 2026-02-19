@@ -410,14 +410,50 @@ class KaraokeActivity : AppCompatActivity(), WebSocketManager.Listener {
             setTextColor(resources.getColor(R.color.text_primary, null))
         }
 
+        val btnUpdate = TextView(this).apply {
+            text = "🔄 KIỂM TRA CẬP NHẬT"
+            textSize = 18f
+            setTextColor(0xFF4CAF50.toInt())
+            setPadding(48, 40, 48, 40)
+            gravity = android.view.Gravity.CENTER
+            setBackgroundResource(android.R.drawable.list_selector_background)
+            setOnClickListener {
+                AppUpdater.checkForUpdate(this@KaraokeActivity, false)
+            }
+        }
+
+        val btnVersion = TextView(this).apply {
+            val vName = try {
+                packageManager.getPackageInfo(packageName, 0).versionName
+            } catch (_: Exception) { "1.7" }
+            text = "Phiên bản: v$vName (PND)"
+            textSize = 14f
+            setTextColor(0xAAFFFFFF.toInt())
+            setPadding(48, 10, 48, 32)
+            gravity = android.view.Gravity.CENTER
+        }
+
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(32, 0, 32, 0)
+            setPadding(32, 16, 32, 16)
+            addView(TextView(this@KaraokeActivity).apply {
+                text = "Mã TV hiện tại:"
+                setPadding(48, 16, 48, 0)
+                setTextColor(0xAAFFFFFF.toInt())
+            })
             addView(input)
+            addView(View(this@KaraokeActivity).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 1
+                ).apply { setMargins(48, 32, 48, 0) }
+                setBackgroundColor(0x33FFFFFF)
+            })
+            addView(btnUpdate)
+            addView(btnVersion)
         }
 
         AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-            .setTitle(getString(R.string.settings_pair_title))
+            .setTitle("CÀI ĐẶT")
             .setView(container)
             .setPositiveButton(getString(R.string.save)) { _, _ ->
                 val newRoom = input.text.toString().trim()

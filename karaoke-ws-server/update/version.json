@@ -1,5 +1,5 @@
 ﻿{
-  "versionCode": 8,
-  "versionName": "1.7",
-  "changelog": "- Cập nhật v1.7: Đồng bộ phiên bản toàn hệ thống\n- Sửa lỗi hiển thị thông tin phiên bản cũ\n- Tăng cường khả năng nhận diện giọng nói"
+  "versionCode": 9,
+  "versionName": "1.8",
+  "changelog": "- Thêm tính năng kiểm tra cập nhật vào menu cài đặt khi đang dùng\n- Cải thiện giao diện menu cài đặt\n- Hỗ trợ đổi mã TV linh hoạt hơn"
 }
