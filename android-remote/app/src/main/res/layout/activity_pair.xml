@@ -175,11 +175,14 @@
                 android:layout_marginStart="14dp" />
         </LinearLayout>
 
-        <View
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="120dp"
             android:layout_marginTop="20dp"
-            android:background="#2E3A4D" />
+            android:scaleType="centerInside"
+            android:src="@drawable/app_icon"
+            android:background="#2E3A4D"
+            android:padding="8dp" />
 
     </LinearLayout>
 

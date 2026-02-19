@@ -5,7 +5,9 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -152,11 +154,27 @@ class KaraokeActivity : AppCompatActivity(), WebSocketManager.Listener {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")
             putExtra(RecognizerIntent.EXTRA_PROMPT, "Nói tên bài hát...")
         }
+
+        // Kiểm tra xem hệ thống có bất kỳ công cụ nhận dạng giọng nói nào không
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            showNoVoiceDialog()
+            return
+        }
+
         try {
             speechLauncher.launch(intent)
         } catch (e: Exception) {
-            Toast.makeText(this, "Thiết bị không hỗ trợ nhận dạng giọng nói", Toast.LENGTH_SHORT).show()
+            // Nếu vẫn lỗi intent, thử hướng dẫn cài app Google
+            showNoVoiceDialog()
         }
+    }
+
+    private fun showNoVoiceDialog() {
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle("Thiếu dịch vụ giọng nói")
+            .setMessage("Thiết bị của bạn chưa cài đặt hoặc đã tắt ứng dụng 'Google' (không phải Chrome). \n\nBạn cần cài ứng dụng Google từ Play Store để sử dụng tính năng tìm kiếm bằng giọng nói.")
+            .setPositiveButton("Đã hiểu", null)
+            .show()
     }
 
     override fun onRequestPermissionsResult(
