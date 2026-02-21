@@ -4,10 +4,16 @@
   var container = document.getElementById('player-container');
   var currentIframe = null;
 
+  // Cloud server URL (must match socket.js)
+  var CLOUD_HTTP_URL = 'https://karawebos.onrender.com';
+
   // Dynamic server IP - set by discovery in socket.js
   var serverIP = null;
 
   function getPlayerHost() {
+    if (serverIP === 'cloud') {
+      return CLOUD_HTTP_URL;
+    }
     return 'http://' + (serverIP || '127.0.0.1') + ':3000';
   }
 
@@ -19,7 +25,7 @@
     waitingScreen.style.display = 'flex';
     playerScreen.style.display = 'none';
     if (currentIframe) {
-      try { currentIframe.src = 'about:blank'; } catch(e) {}
+      try { currentIframe.src = 'about:blank'; } catch (e) { }
       currentIframe.parentNode.removeChild(currentIframe);
       currentIframe = null;
     }
