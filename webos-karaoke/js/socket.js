@@ -136,44 +136,47 @@
   }
 
   /* ===================== SMART DISCOVERY ===================== */
-  // Priority: 1) Cloud server  2) Cached LAN IP  3) Full LAN scan
+  // Priority: 1) Cached LAN IP  2) LAN scan  3) Cloud server (fallback)
+  // LAN first because Android Remote only supports LAN - both must be on same server
   function discoverServer(onFound, onFail) {
-    setStatus('Đang kết nối Cloud server...');
+    // Step 1: Try cached LAN IP first (fastest)
+    var cached = null;
+    try { cached = localStorage.getItem('karaoke_server_ip'); } catch (e) { }
 
-    // Step 1: Try cloud server first
-    pingCloud(function (cloudOk) {
-      if (cloudOk) {
-        serverMode = 'cloud';
-        onFound(null); // null IP = use cloud URL
-        return;
-      }
-
-      // Step 2: Cloud unavailable, try cached LAN IP
-      setStatus('Cloud không khả dụng, tìm LAN...');
-      var cached = null;
-      try { cached = localStorage.getItem('karaoke_server_ip'); } catch (e) { }
-
-      if (cached) {
-        pingServer(cached, function (ok) {
-          if (ok) {
-            serverMode = 'lan';
-            onFound(cached);
-          } else {
-            localStorage.removeItem('karaoke_server_ip');
-            // Step 3: Full LAN scan
-            scanSubnet(function (ip) {
-              serverMode = 'lan';
-              onFound(ip);
-            }, onFail);
-          }
-        });
-      } else {
-        // Step 3: Full LAN scan
-        scanSubnet(function (ip) {
+    if (cached) {
+      setStatus('Kết nối LAN ' + cached + '...');
+      pingServer(cached, function (ok) {
+        if (ok) {
           serverMode = 'lan';
-          onFound(ip);
-        }, onFail);
-      }
+          onFound(cached);
+          return;
+        }
+        localStorage.removeItem('karaoke_server_ip');
+        // Cached IP failed, try full LAN scan
+        tryLanThenCloud(onFound, onFail);
+      });
+    } else {
+      tryLanThenCloud(onFound, onFail);
+    }
+  }
+
+  function tryLanThenCloud(onFound, onFail) {
+    // Step 2: Full LAN scan
+    setStatus('Đang tìm server trên mạng LAN...');
+    scanSubnet(function (ip) {
+      serverMode = 'lan';
+      onFound(ip);
+    }, function () {
+      // Step 3: LAN not found, try cloud as fallback
+      setStatus('LAN không tìm thấy, thử Cloud...');
+      pingCloud(function (cloudOk) {
+        if (cloudOk) {
+          serverMode = 'cloud';
+          onFound(null);
+        } else {
+          onFail();
+        }
+      });
     });
   }
 
