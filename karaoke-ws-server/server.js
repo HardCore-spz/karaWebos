@@ -56,7 +56,7 @@ if (!IS_CLOUD) {
     setInterval(() => {
       const localIP = getLocalIP();
       const beacon = Buffer.from(`KARAOKE_SERVER:${localIP}:${PORT}`);
-      udpServer.send(beacon, 0, beacon.length, UDP_PORT, '255.255.255.255', () => {});
+      udpServer.send(beacon, 0, beacon.length, UDP_PORT, '255.255.255.255', () => { });
     }, 2000);
   });
 } else {
@@ -114,6 +114,34 @@ iframe{width:100%;height:100%;border:0}</style>
 
 const httpServer = http.createServer((req, res) => {
   const parsed = url.parse(req.url, true);
+  // Landing page
+  if (parsed.pathname === '/') {
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.end(`<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Karaoke Server</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh}
+.card{background:#1a1a2e;border-radius:16px;padding:40px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:400px;width:90%}
+h1{font-size:28px;background:linear-gradient(135deg,#e94560,#0f3460);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.status{display:inline-block;background:#00c853;color:#000;padding:4px 16px;border-radius:20px;font-size:14px;font-weight:600;margin:12px 0}
+.info{color:#888;font-size:14px;margin-top:16px;line-height:1.8}
+.emoji{font-size:48px;margin-bottom:12px}
+</style></head><body>
+<div class="card">
+<div class="emoji">🎤</div>
+<h1>Karaoke Server</h1>
+<div class="status">● Online</div>
+<div class="info">
+WebSocket server đang hoạt động<br>
+Kết nối từ TV hoặc Remote app
+</div>
+</div>
+</body></html>`);
+    return;
+  }
 
   // Discovery endpoint - apps use this to verify server
   if (parsed.pathname === '/ping') {
