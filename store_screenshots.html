@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Store Screenshots - Karaoke Remote</title>
+    <style>
+        :root {
+            --bg-color: #0c0a09;
+            --primary-color: #f43f5e;
+            --accent-color: #06b6d4;
+            --surface: #1c1917;
+            --text-main: #fafaf9;
+            --text-muted: #a8a29e;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0c0a09 url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80') center/cover fixed;
+            margin: 0; padding: 60px 20px;
+            display: flex; flex-direction: column; align-items: center; color: var(--text-main);
+        }
+        body::before { content: ''; position: fixed; inset: 0; background: linear-gradient(135deg, rgba(12,10,9,0.95) 0%, rgba(28,25,23,0.85) 100%); z-index: -1; }
+        .header { text-align: center; margin-bottom: 60px; }
+        .header h1 { font-size: 3rem; margin-bottom: 10px; background: linear-gradient(to right, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        .showcase { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; width: 100%; max-width: 1400px; }
+        .frame-group { display: flex; flex-direction: column; align-items: center; }
+        .tagline { margin-bottom: 15px; font-weight: 700; color: var(--primary-color); text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* iPhone Frame */
+        .iphone { width: 280px; height: 580px; background: #000; border-radius: 40px; padding: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; border: 4px solid #292524; }
+        .iphone::after { content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 20px; z-index: 50; }
+        
+        /* TV Frame */
+        .tv-frame { width: 800px; height: 450px; background: #111; border: 12px solid #222; border-radius: 10px; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden; }
+        .tv-stand { width: 160px; height: 20px; background: #222; margin: 0 auto; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
+        
+        .screen { width: 100%; height: 100%; background: #000; border-radius: inherit; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+        
+        /* Common UI */
+        .status { padding: 35px 20px 10px; display: flex; justify-content: space-between; font-size: 10px; color: #888; }
+        .page { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .hero-icon { font-size: 60px; margin-bottom: 20px; filter: drop-shadow(0 0 20px var(--primary-color)); }
+        .input-pill { background: var(--surface); border: 1px solid #444; border-radius: 12px; padding: 12px; font-size: 24px; font-family: monospace; letter-spacing: 6px; width: 100%; text-align: center; margin-bottom: 20px; }
+        .cta-btn { background: var(--primary-color); padding: 14px; border-radius: 12px; width: 100%; text-align: center; font-weight: 700; cursor: pointer; }
+
+        /* TV Specific UI */
+        .tv-screen { background: radial-gradient(circle at center, #1e1b4b, #000); padding: 40px; color: white; height: 100%; box-sizing: border-box; display: flex; }
+        .tv-player { flex: 2; background: #000; border-radius: 10px; position: relative; display: flex; align-items: center; justify-content: center; border: 1px solid #333; }
+        .tv-sidebar { flex: 1; padding-left: 30px; display: flex; flex-direction: column; }
+        .queue-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; gap: 10px; }
+        .q-thumb { width: 80px; height: 45px; background: #333; border-radius: 4px; }
+        .pin-display { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; border: 1px solid var(--accent-color); font-weight: 800; color: var(--accent-color); font-size: 18px; }
+
+        .footer-note { margin-top: 60px; text-align: center; color: var(--text-muted); line-height: 1.6; }
+        kbd { background: #333; padding: 2px 6px; border-radius: 4px; color: #fff; font-family: inherit; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>KARAOKE PND - ASSETS</h1>
+        <p>Giao diện Store dành cho Điện thoại và TV webOS</p>
+    </div>
+
+    <div class="showcase">
+        <!-- TV Screen mockup -->
+        <div class="frame-group" style="width: 100%; margin-bottom: 50px;">
+            <div class="tagline">4. GIAO DIỆN TRÊN WEBOS TV</div>
+            <div class="tv-frame">
+                <div class="screen">
+                    <div class="tv-screen">
+                        <div class="tv-player">
+                            <div class="pin-display">PIN: 842135</div>
+                            <div style="font-size: 80px;"></div>
+                            <div style="position: absolute; bottom: 20px; left: 20px; font-size: 20px; font-weight: 700;">
+                                Vùng Lá Me Bay - Karaoke Tone Nữ
+                            </div>
+                        </div>
+                        <div class="tv-sidebar">
+                            <h2 style="font-size: 18px; margin-top: 0; color: var(--primary-color);">ĐANG CHỜ</h2>
+                            <div class="queue-item">
+                                <div class="q-thumb"></div>
+                                <div style="font-size: 12px;">Duyên Phận - Karaoke</div>
+                            </div>
+                            <div class="queue-item">
+                                <div class="q-thumb"></div>
+                                <div style="font-size: 12px;">Thành Phố Buồn - Karaoke</div>
+                            </div>
+                            <div style="flex:1"></div>
+                            <div style="font-size: 11px; color: #666;">Quét mã hoặc nhập PIN để điều khiển</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tv-stand"></div>
+        </div>
+
+        <div class="frame-group">
+            <div class="tagline">1. KẾT NỐI</div>
+            <div class="iphone">
+                <div class="screen">
+                    <div class="status"><span>9:41</span><span> </span></div>
+                    <div class="page">
+                        <div class="hero-icon"></div>
+                        <p style="font-size: 12px; color: #a8a29e">Nhập mã PIN từ ứng dụng TV</p>
+                        <div class="input-pill">842135</div>
+                        <div class="cta-btn">KẾT NỐI TV</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="frame-group">
+            <div class="tagline">2. TÌM KIẾM</div>
+            <div class="iphone">
+                <div class="screen">
+                    <div class="status"><span>9:42</span><span> </span></div>
+                    <div style="padding: 15px; border-bottom: 1px solid #111;">
+                         <div style="background: #222; padding: 10px; border-radius: 10px; font-size: 12px; color: #666; display: flex; justify-content: space-between;">
+                            <span>Vùng lá me bay karaoke...</span>
+                            <span></span>
+                         </div>
+                    </div>
+                    <div style="padding: 10px;">
+                        <div style="display:flex; gap: 10px; background: #111; padding: 10px; border-radius: 10px;">
+                            <div style="width: 100px; height: 56px; background: #333; border-radius: 4px;"></div>
+                            <div style="font-size: 12px; font-weight: 700;">Vùng Lá Me Bay...</div>
+                        </div>
+                        <div style="display:flex; gap: 10px; padding: 10px; margin-top: 5px;">
+                            <div style="width: 100px; height: 56px; background: #222; border-radius: 4px;"></div>
+                            <div style="font-size: 12px; color: #666;">Duyên Phận - Karaoke</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="frame-group">
+            <div class="tagline">3. GIỌNG NÓI</div>
+            <div class="iphone">
+                <div class="screen">
+                    <div class="voice-mode">
+                        <div class="ripple"></div>
+                        <div style="margin-top: 20px; font-weight: 800; color: var(--accent-color)">TIẾNG VIỆT</div>
+                        <div style="margin-top: 10px; font-style: italic; font-size: 14px">"Bến sông chờ karaoke"</div>
+                    </div>
+                    <div class="status"><span>9:43</span><span> </span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <p> <b>Mẹo:</b> Dùng nhấn <kbd>Win + Shift + S</kbd> rồi khoanh vùng từng thiết bị để lấy ảnh riêng.<br>
+        Tỷ lệ màn hình TV là 16:9, Điện thoại là 9:19.5 - Chuẩn Google Play & LG Store.</p>
+    </div>
+</body>
+</html>

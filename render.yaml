@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: karawebos
+    runtime: node
+    rootDir: karaoke-ws-server
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: RENDER
+        value: true

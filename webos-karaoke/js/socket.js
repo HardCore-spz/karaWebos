@@ -1,6 +1,13 @@
 (function () {
+  /* ===================== CONFIGURATION ===================== */
+  // Cloud server URL - change this after deploying to Render.com
+  var CLOUD_SERVER_URL = 'wss://karawebos.onrender.com';
+  var CLOUD_HTTP_URL = 'https://karawebos.onrender.com';
   var SERVER_PORT = 3000;
+
+  var serverMode = null; // 'cloud' or 'lan'
   var serverIP = null;
+  var serverWSUrl = null;
 
   var pairingCodeElement = document.getElementById('pairing-code');
   var connectionStatusElement = document.getElementById('connection-status');
@@ -31,10 +38,30 @@
     }
   }
 
-  /* ===================== AUTO-DISCOVERY ===================== */
-  // Scan the local subnet for the karaoke server via HTTP /ping
+  /* ===================== CLOUD SERVER CHECK ===================== */
+  function pingCloud(callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', CLOUD_HTTP_URL + '/ping', true);
+    xhr.timeout = 5000;
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          if (data.service === 'karaoke') {
+            callback(true);
+            return;
+          }
+        } catch (e) { }
+      }
+      callback(false);
+    };
+    xhr.onerror = function () { callback(false); };
+    xhr.ontimeout = function () { callback(false); };
+    xhr.send();
+  }
+
+  /* ===================== LAN DISCOVERY ===================== */
   function getLocalSubnet(callback) {
-    // Try WebRTC to get local IP
     try {
       var pc = new RTCPeerConnection({ iceServers: [] });
       pc.createDataChannel('');
@@ -54,33 +81,12 @@
           }
         }
       };
-      // Fallback after 2s
       setTimeout(function () {
         pc.close();
         callback('192.168.1');
       }, 2000);
     } catch (e) {
       callback('192.168.1');
-    }
-  }
-
-  function discoverServer(onFound, onFail) {
-    // Check localStorage for cached server
-    var cached = null;
-    try { cached = localStorage.getItem('karaoke_server_ip'); } catch(e) {}
-
-    if (cached) {
-      // Verify cached IP still works
-      pingServer(cached, function (ok) {
-        if (ok) {
-          onFound(cached);
-        } else {
-          localStorage.removeItem('karaoke_server_ip');
-          scanSubnet(onFound, onFail);
-        }
-      });
-    } else {
-      scanSubnet(onFound, onFail);
     }
   }
 
@@ -96,7 +102,7 @@
             callback(true);
             return;
           }
-        } catch (e) {}
+        } catch (e) { }
       }
       callback(false);
     };
@@ -106,18 +112,17 @@
   }
 
   function scanSubnet(onFound, onFail) {
-    setStatus('Đang tìm server trên mạng...');
+    setStatus('Đang tìm server trên mạng LAN...');
     getLocalSubnet(function (subnet) {
       var found = false;
       var pending = 254;
-
       for (var i = 1; i <= 254; i++) {
         (function (n) {
           var ip = subnet + '.' + n;
           pingServer(ip, function (ok) {
             if (ok && !found) {
               found = true;
-              try { localStorage.setItem('karaoke_server_ip', ip); } catch(e) {}
+              try { localStorage.setItem('karaoke_server_ip', ip); } catch (e) { }
               onFound(ip);
             }
             pending--;
@@ -126,6 +131,48 @@
             }
           });
         })(i);
+      }
+    });
+  }
+
+  /* ===================== SMART DISCOVERY ===================== */
+  // Priority: 1) Cloud server  2) Cached LAN IP  3) Full LAN scan
+  function discoverServer(onFound, onFail) {
+    setStatus('Đang kết nối Cloud server...');
+
+    // Step 1: Try cloud server first
+    pingCloud(function (cloudOk) {
+      if (cloudOk) {
+        serverMode = 'cloud';
+        onFound(null); // null IP = use cloud URL
+        return;
+      }
+
+      // Step 2: Cloud unavailable, try cached LAN IP
+      setStatus('Cloud không khả dụng, tìm LAN...');
+      var cached = null;
+      try { cached = localStorage.getItem('karaoke_server_ip'); } catch (e) { }
+
+      if (cached) {
+        pingServer(cached, function (ok) {
+          if (ok) {
+            serverMode = 'lan';
+            onFound(cached);
+          } else {
+            localStorage.removeItem('karaoke_server_ip');
+            // Step 3: Full LAN scan
+            scanSubnet(function (ip) {
+              serverMode = 'lan';
+              onFound(ip);
+            }, onFail);
+          }
+        });
+      } else {
+        // Step 3: Full LAN scan
+        scanSubnet(function (ip) {
+          serverMode = 'lan';
+          onFound(ip);
+        }, onFail);
       }
     });
   }
@@ -172,12 +219,18 @@
     clearReconnectTimer();
     reconnectAttempts += 1;
 
-    // Every 10 reconnects, re-discover in case server IP changed
+    // Every 10 reconnects, re-discover in case server changed
     if (reconnectAttempts % 10 === 0) {
       setStatus('Tìm lại server...');
       discoverServer(function (ip) {
         serverIP = ip;
-        window.KaraokePlayer.setServerIP(ip);
+        if (serverMode === 'cloud') {
+          serverWSUrl = CLOUD_SERVER_URL;
+          window.KaraokePlayer.setServerIP('cloud');
+        } else {
+          serverWSUrl = 'ws://' + ip + ':' + SERVER_PORT;
+          window.KaraokePlayer.setServerIP(ip);
+        }
         connectWS();
       }, function () {
         var delay = Math.min(15000, 1000 * reconnectAttempts);
@@ -205,12 +258,11 @@
       room: pairingCode,
       role: 'tv'
     };
-
     socket.send(JSON.stringify(joinPayload));
   }
 
   function connectWS() {
-    if (!serverIP) return;
+    if (!serverWSUrl) return;
 
     if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
       return;
@@ -219,12 +271,12 @@
     isConnecting = true;
     isConnected = false;
 
-    var WS_URL = 'ws://' + serverIP + ':' + SERVER_PORT;
     var currentToken = ++socketToken;
+    var displayName = (serverMode === 'cloud') ? 'Cloud' : serverIP;
 
     try {
-      setStatus('Đang kết nối server ' + serverIP + '...');
-      socket = new WebSocket(WS_URL);
+      setStatus('Đang kết nối ' + displayName + '...');
+      socket = new WebSocket(serverWSUrl);
     } catch (error) {
       isConnecting = false;
       scheduleReconnect();
@@ -240,7 +292,7 @@
       reconnectAttempts = 0;
       isConnecting = false;
       isConnected = true;
-      setStatus('Đã kết nối. Room: ' + pairingCode);
+      setStatus('Đã kết nối ' + displayName + '. Room: ' + pairingCode);
       sendJoinRoom();
     };
 
@@ -253,7 +305,7 @@
       if (currentToken !== socketToken) {
         return;
       }
-      setStatus('Lỗi kết nối WebSocket');
+      setStatus('Lỗi kết nối ' + displayName);
     };
 
     socket.onclose = function () {
@@ -268,19 +320,31 @@
     };
   }
 
-  // Start: discover server, then connect
+  /* ===================== START ===================== */
   discoverServer(function (ip) {
     serverIP = ip;
-    window.KaraokePlayer.setServerIP(ip);
-    setStatus('Server: ' + ip);
+    if (serverMode === 'cloud') {
+      serverWSUrl = CLOUD_SERVER_URL;
+      window.KaraokePlayer.setServerIP('cloud');
+      setStatus('Cloud Server ✓');
+    } else {
+      serverWSUrl = 'ws://' + ip + ':' + SERVER_PORT;
+      window.KaraokePlayer.setServerIP(ip);
+      setStatus('LAN Server: ' + ip);
+    }
     connectWS();
   }, function () {
     setStatus('Không tìm thấy server. Kiểm tra WiFi.');
-    // Retry discovery every 5 seconds
     setTimeout(function retry() {
       discoverServer(function (ip) {
         serverIP = ip;
-        window.KaraokePlayer.setServerIP(ip);
+        if (serverMode === 'cloud') {
+          serverWSUrl = CLOUD_SERVER_URL;
+          window.KaraokePlayer.setServerIP('cloud');
+        } else {
+          serverWSUrl = 'ws://' + ip + ':' + SERVER_PORT;
+          window.KaraokePlayer.setServerIP(ip);
+        }
         connectWS();
       }, function () {
         setTimeout(retry, 5000);
@@ -288,3 +352,4 @@
     }, 5000);
   });
 })();
+

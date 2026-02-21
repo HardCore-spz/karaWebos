@@ -1,12 +1,13 @@
 {
-  "id": "com.example.weboskaraoke",
-  "version": "1.1.0",
-  "vendor": "LGDev",
-  "type": "web",
-  "main": "index.html",
-  "title": "Karaoke Player",
-  "icon": "icon.png",
-  "requiredMemory": 64,
-  "largeIcon": "largeIcon.png",
-  "supportsAudioGuidance": false
+    "id": "com.pnd.karaoke",
+    "version": "1.1.3",
+    "vendor": "PND",
+    "type": "web",
+    "main": "index.html",
+    "title": "Karaoke Player",
+    "icon": "icon.png",
+    "largeIcon": "largeIcon.png",
+    "resolution": "1920x1080",
+    "requiredMemory": 128,
+    "supportsAudioGuidance": false
 }

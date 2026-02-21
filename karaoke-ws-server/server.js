@@ -6,9 +6,10 @@ const dgram = require('dgram');
 const os = require('os');
 const WebSocket = require('ws');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const UDP_PORT = 3001;
 const DISCOVERY_MSG = 'KARAOKE_SERVER';
+const IS_CLOUD = !!process.env.PORT || !!process.env.RENDER;
 
 /* ===================== GET LOCAL IP ===================== */
 function getLocalIP() {
@@ -34,28 +35,33 @@ function getLocalIP() {
 
 /* ===================== UDP DISCOVERY ===================== */
 // Broadcasts server presence so Android & TV can auto-discover
-const udpServer = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+// Skip UDP on cloud deployments (no LAN to discover)
+if (!IS_CLOUD) {
+  const udpServer = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 
-udpServer.on('message', (msg, rinfo) => {
-  const text = msg.toString().trim();
-  if (text === 'KARAOKE_DISCOVER') {
-    const localIP = getLocalIP();
-    const response = Buffer.from(`KARAOKE_SERVER:${localIP}:${PORT}`);
-    udpServer.send(response, rinfo.port, rinfo.address);
-  }
-});
+  udpServer.on('message', (msg, rinfo) => {
+    const text = msg.toString().trim();
+    if (text === 'KARAOKE_DISCOVER') {
+      const localIP = getLocalIP();
+      const response = Buffer.from(`KARAOKE_SERVER:${localIP}:${PORT}`);
+      udpServer.send(response, rinfo.port, rinfo.address);
+    }
+  });
 
-udpServer.bind(UDP_PORT, '0.0.0.0', () => {
-  udpServer.setBroadcast(true);
-  console.log(`UDP discovery listening on port ${UDP_PORT}`);
+  udpServer.bind(UDP_PORT, '0.0.0.0', () => {
+    udpServer.setBroadcast(true);
+    console.log(`UDP discovery listening on port ${UDP_PORT}`);
 
-  // Also broadcast every 2 seconds so TV can passively listen
-  setInterval(() => {
-    const localIP = getLocalIP();
-    const beacon = Buffer.from(`KARAOKE_SERVER:${localIP}:${PORT}`);
-    udpServer.send(beacon, 0, beacon.length, UDP_PORT, '255.255.255.255', () => {});
-  }, 2000);
-});
+    // Also broadcast every 2 seconds so TV can passively listen
+    setInterval(() => {
+      const localIP = getLocalIP();
+      const beacon = Buffer.from(`KARAOKE_SERVER:${localIP}:${PORT}`);
+      udpServer.send(beacon, 0, beacon.length, UDP_PORT, '255.255.255.255', () => {});
+    }, 2000);
+  });
+} else {
+  console.log('Cloud mode: UDP discovery disabled');
+}
 
 /* ===================== HTTP SERVER ===================== */
 // Serves a YouTube player page so the embed runs on http://
@@ -176,13 +182,30 @@ const httpServer = http.createServer((req, res) => {
     return;
   }
 
+  // Store screenshots mockup
+  if (parsed.pathname === '/screenshots') {
+    const screenshotFile = path.join(path.dirname(__dirname), 'store_screenshots.html');
+    if (fs.existsSync(screenshotFile)) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(fs.readFileSync(screenshotFile));
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Mockup not found');
+    }
+    return;
+  }
+
   res.writeHead(404, { 'Content-Type': 'text/plain' });
   res.end('not found');
 });
 
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`Karaoke HTTP+WS server running on http://${getLocalIP()}:${PORT}`);
-  console.log(`UDP discovery on port ${UDP_PORT}`);
+  if (IS_CLOUD) {
+    console.log(`Karaoke Cloud server running on port ${PORT}`);
+  } else {
+    console.log(`Karaoke HTTP+WS server running on http://${getLocalIP()}:${PORT}`);
+    console.log(`UDP discovery on port ${UDP_PORT}`);
+  }
 });
 
 /* ===================== WEBSOCKET SERVER ===================== */
