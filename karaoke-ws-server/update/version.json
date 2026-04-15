@@ -1,6 +1,6 @@
 {
-  "versionCode": 212,
-  "versionName": "2.0.12",
-  "changelog": "Ban hotfix de ep update dung ban moi, tranh nham voi v2.0.10; giu logic list nhac theo room, lich su phong va quet QR.",
+  "versionCode": 213,
+  "versionName": "2.0.13",
+  "changelog": "Sua loi cache file update: moi lan tai dung ten file rieng theo version, uu tien nguon update GitHub moi nhat.",
   "apkUrl": "https://karawebos.onrender.com/apk"
 }
