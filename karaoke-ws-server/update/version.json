@@ -1,6 +1,6 @@
 {
-  "versionCode": 208,
-  "versionName": "2.0.8",
-  "changelog": "Tu dong kiem tra phong da luu khi mo lai app; bo sung panel ma phong + QR tren TV de nhieu may ket noi; giao dien Pair to ro, de dung cho nguoi lon tuoi.",
+  "versionCode": 209,
+  "versionName": "2.0.9",
+  "changelog": "Lam moi giao dien Pair de nhin la biet thao tac; dua random goi y ve man Chon bai; tai app vao la tu do danh sach goi y co the chon ngay.",
   "apkUrl": "https://karawebos.onrender.com/apk"
 }
