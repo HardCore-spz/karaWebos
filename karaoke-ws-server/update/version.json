@@ -1,6 +1,6 @@
 {
-  "versionCode": 213,
-  "versionName": "2.0.13",
-  "changelog": "Sua loi cache file update: moi lan tai dung ten file rieng theo version, uu tien nguon update GitHub moi nhat.",
+  "versionCode": 214,
+  "versionName": "2.0.14",
+  "changelog": "Cai tien giao dien Chon bai cho nguoi lon tuoi: chu to, nut to, thao tac ro rang; sua tim bai bang voice sang che do on dinh hon.",
   "apkUrl": "https://karawebos.onrender.com/apk"
 }
