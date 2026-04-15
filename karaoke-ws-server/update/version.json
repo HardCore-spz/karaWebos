@@ -1,6 +1,6 @@
 {
-  "versionCode": 210,
-  "versionName": "2.0.10",
-  "changelog": "Them nut quet QR bang camera trong app; them lich su 3 phong gan nhat bam la vao; phong het han se tu dong bi loai khoi danh sach.",
+  "versionCode": 211,
+  "versionName": "2.0.11",
+  "changelog": "Hang cho nhac tach theo tung ma phong; vao phong moi thi trong, vao phong cu thi giu danh sach cu; dong bo list tam thoi giua cac may trong cung phong; bai hat da het se bi xoa khoi danh sach.",
   "apkUrl": "https://karawebos.onrender.com/apk"
 }
