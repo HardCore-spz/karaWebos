@@ -1,6 +1,6 @@
 {
-  "versionCode": 209,
-  "versionName": "2.0.9",
-  "changelog": "Lam moi giao dien Pair de nhin la biet thao tac; dua random goi y ve man Chon bai; tai app vao la tu do danh sach goi y co the chon ngay.",
+  "versionCode": 210,
+  "versionName": "2.0.10",
+  "changelog": "Them nut quet QR bang camera trong app; them lich su 3 phong gan nhat bam la vao; phong het han se tu dong bi loai khoi danh sach.",
   "apkUrl": "https://karawebos.onrender.com/apk"
 }
