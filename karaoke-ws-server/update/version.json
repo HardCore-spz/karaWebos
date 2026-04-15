@@ -1,6 +1,6 @@
 {
-  "versionCode": 211,
-  "versionName": "2.0.11",
-  "changelog": "Hang cho nhac tach theo tung ma phong; vao phong moi thi trong, vao phong cu thi giu danh sach cu; dong bo list tam thoi giua cac may trong cung phong; bai hat da het se bi xoa khoi danh sach.",
+  "versionCode": 212,
+  "versionName": "2.0.12",
+  "changelog": "Ban hotfix de ep update dung ban moi, tranh nham voi v2.0.10; giu logic list nhac theo room, lich su phong va quet QR.",
   "apkUrl": "https://karawebos.onrender.com/apk"
 }
