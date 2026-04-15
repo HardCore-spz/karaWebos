@@ -1,5 +1,6 @@
-﻿{
-  "versionCode": 9,
-  "versionName": "1.8",
-  "changelog": "- Thêm tính năng kiểm tra cập nhật vào menu cài đặt khi đang dùng\n- Cải thiện giao diện menu cài đặt\n- Hỗ trợ đổi mã TV linh hoạt hơn"
+{
+  "versionCode": 208,
+  "versionName": "2.0.8",
+  "changelog": "Tu dong kiem tra phong da luu khi mo lai app; bo sung panel ma phong + QR tren TV de nhieu may ket noi; giao dien Pair to ro, de dung cho nguoi lon tuoi.",
+  "apkUrl": "https://karawebos.onrender.com/apk"
 }
