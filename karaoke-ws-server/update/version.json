@@ -1,6 +1,6 @@
 {
-  "versionCode": 214,
-  "versionName": "2.0.14",
-  "changelog": "Cai tien giao dien Chon bai cho nguoi lon tuoi: chu to, nut to, thao tac ro rang; sua tim bai bang voice sang che do on dinh hon.",
+  "versionCode": 215,
+  "versionName": "2.0.15",
+  "changelog": "Fix ghep noi phong: bo xoa nham phong khi timeout ngan, chi loai phong khi server tra ve loi phong khong hop le; cai thien do on dinh khi vao phong.",
   "apkUrl": "https://karawebos.onrender.com/apk"
 }
